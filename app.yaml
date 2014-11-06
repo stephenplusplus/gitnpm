@@ -1,0 +1,18 @@
+version: 1
+runtime: custom
+vm: true
+api_version: 1
+
+vm_health_check:
+  enable_health_check: false
+
+manual_scaling:
+  instances: 1
+
+handlers:
+- url: /favicon.ico
+  static_files: favicon.ico
+  upload: favicon.ico
+
+- url: .*
+  script: app.js

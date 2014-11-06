@@ -1,0 +1,19 @@
+{
+  "name": "gitnpm",
+  "version": "1.0.0",
+  "private": "true",
+  "description": "git urls from npm packages",
+  "main": "index.js",
+  "author": "Stephen Sawchuk <sawchuk@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.10.1",
+    "gcloud": "^0.10.0",
+    "gcloud-keystore": "^1.1.0",
+    "github-url-from-git": "^1.4.0",
+    "through2": "^0.6.3"
+  },
+  "scripts": {
+    "start": "node ./"
+  }
+}
