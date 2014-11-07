@@ -35,7 +35,9 @@ express()
     packageJson(pkg, function (err, json) {
       if (err) return res.end(pkg + " isn't a thing... go make it?")
 
-      var url = githubUrl(json.repository.url)
+      var url = "https://npmjs.org/package/" + pkg
+      if (json.repository && json.repository.url) url = githubUrl(json.repository.url)
+
       res.redirect(url)
 
       try/*logging the search*/{
