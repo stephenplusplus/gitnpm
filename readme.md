@@ -1,4 +1,4 @@
-# [git](http://git-scm.com)[npm](https://npmjs.org)
+# [gitnpm](http://gitnpm.com)
 an app that takes you to an npm repository's GitHub.
 - - -
 
