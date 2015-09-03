@@ -1,18 +1,14 @@
-version: 4
-runtime: custom
+runtime: nodejs
 vm: true
 api_version: 1
 
-vm_health_check:
-  enable_health_check: false
+resources:
+  cpu: .5
+  memory_gb: 1.3
+  disk_size_gb: 10
 
 manual_scaling:
   instances: 1
 
-handlers:
-- url: /favicon.ico
-  static_files: favicon.ico
-  upload: favicon.ico
-
-- url: .*
-  script: app.js
+vm_health_check:
+  enable_health_check: false

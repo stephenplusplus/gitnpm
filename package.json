@@ -7,14 +7,17 @@
   "author": "Stephen Sawchuk <sawchuk@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.10.1",
-    "gcloud": "^0.10.0",
-    "gcloud-keystore": "^1.1.0",
+    "express": "^4.13.3",
+    "gcloud": "^0.20.0",
+    "gcloud-kvstore": "^2.0.0",
     "github-url-from-git": "^1.4.0",
-    "package-json": "^1.0.1",
-    "through2": "^0.6.3"
+    "package-json": "^1.2.0",
+    "through2": "^2.0.0"
   },
   "scripts": {
-    "start": "node ./"
+    "test": "standard"
+  },
+  "devDependencies": {
+    "standard": "^5.1.1"
   }
 }
