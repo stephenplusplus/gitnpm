@@ -21,7 +21,7 @@ Several times a day, I wind up going to npmjs.org/package/some-package to dig th
 ### gitnpm.com/{pkgName}/hits
 *Example: http://gitnpm.com/gcloud/hits*
 
-## try this for quicker results
+## make gitnpm a custom search for quicker results
 
 ![Add gitnpm as a custom search engine](custom-search.png)
 
