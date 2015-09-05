@@ -12,7 +12,8 @@
     "gcloud-kvstore": "^2.0.0",
     "github-url-from-git": "^1.4.0",
     "package-json": "^1.2.0",
-    "through2": "^2.0.0"
+    "through2": "^2.0.0",
+    "validate-npm-package-name": "^2.2.2"
   },
   "scripts": {
     "test": "standard"

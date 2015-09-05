@@ -6,12 +6,57 @@ var githubUrl = require('github-url-from-git')
 var keystore = require('gcloud-kvstore')
 var packageJson = require('package-json')
 var through = require('through2')
+var validateNpmPackageName = require('validate-npm-package-name')
 
 var logDataset = keystore(gcloud.datastore.dataset({ projectId: 'gitnpm' }))
 var logTable = gcloud.bigquery().dataset('gitnpm').table('npm_packages')
 
+var parseUrl = function (pkg) {
+  var repository = pkg.repository
+
+  if (!repository) return 'https://npmjs.org/package/' + pkg.name
+  if (repository.url) return githubUrl(repository.url)
+
+  var hosts = {
+    gist: {
+      pattern: /gist:(\w+)/,
+      getUrl: function (match) {
+        return 'https://gist.github.com/' + match[1]
+      }
+    },
+    bitbucket: {
+      pattern: /bitbucket:([^/]+)\/(.+)/,
+      getUrl: function (match) {
+        return 'https://bitbucket.org/' + match[1] + '/' + match[2]
+      }
+    },
+    gitlab: {
+      pattern: /gitlab:([^/]+)\/(.+)/,
+      getUrl: function (match) {
+        return 'https://gitlab.com/' + match[1] + '/' + match[2]
+      }
+    },
+    github: {
+      pattern: /([^/]+)\/(.+)/,
+      getUrl: function (match) {
+        return 'https://github.com/' + match[1] + '/' + match[2]
+      }
+    }
+  }
+
+  for (var host in hosts) {
+    var pattern = hosts[host].pattern
+    var getUrl = hosts[host].getUrl
+
+    if (pattern.test(repository)) return getUrl(pattern.exec(repository))
+  }
+}
+
 var validatePkgName = function (req, res, next) {
-  if (/[^\w-]/.test(req.params.pkgName)) return res.end('this looks funky. try something else')
+  var isNameValid = validateNpmPackageName(req.params.pkgName)
+  if (!isNameValid.validForNewPackages && !isNameValid.validForOldPackages) {
+    return res.end('this looks funky. try something else')
+  }
   next()
 }
 
@@ -50,9 +95,7 @@ express()
   .get('/:pkgName', validatePkgName, getPkgInfo, function (req, res) {
     var pkgName = req.params.pkgName
     var pkg = res._pkgInfo
-
-    var url = 'https://npmjs.org/package/' + pkgName
-    if (pkg.repository && pkg.repository.url) url = githubUrl(pkg.repository.url)
+    var url = parseUrl(pkg.latest)
 
     res.redirect(url)
 
