@@ -8,7 +8,7 @@ var packageJson = require('package-json')
 var through = require('through2')
 var validateNpmPackageName = require('validate-npm-package-name')
 
-var logDataset = keystore(gcloud.datastore.dataset({ projectId: 'gitnpm' }))
+var logDataset = keystore(gcloud.datastore.dataset())
 var logTable = gcloud.bigquery().dataset('gitnpm').table('npm_packages')
 
 var parseUrl = function (pkg) {
@@ -87,7 +87,7 @@ express()
     res.write('<div style="margin-top:40vh;text-align:center">')
     res.write('  <form method=get action=/ style="font:3em monospace">')
     res.write('    <span style="color:#F08">$</span> npm repo')
-    res.write('    <input name=pkg placeholder=pkgname size=10 style="font:1em monospace;color:#777;border:0">')
+    res.write('    <input name=pkgName placeholder=pkgname size=10 style="font:1em monospace;color:#777;border:0">')
     res.end()
   })
 
