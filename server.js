@@ -1,7 +1,7 @@
 'use strict'
 
 var express = require('express')
-var gcloud = require('gcloud')({ projectId: 'gitnpm', keyFilename: './key.json' })
+var gcloud = require('gcloud')({ projectId: 'git-npm', keyFilename: './key.json' })
 var githubUrl = require('github-url-from-git')
 var keystore = require('gcloud-kvstore')
 var packageJson = require('package-json')
@@ -77,7 +77,7 @@ var getPkgInfo = function (req, res, next) {
 }
 
 express()
-
+  .listen(8080)
   .set('json spaces', 2)
 
   // display a form to accept a package name
@@ -136,5 +136,3 @@ express()
       .on('prefinish', res.write.bind(res, 'done.'))
       .pipe(res)
   })
-
-  .listen(8080)
