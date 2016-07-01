@@ -15,8 +15,13 @@ Several times a day, I wind up going to npmjs.org/package/some-package to dig th
 ### gitnpm.com/{pkgName}/json
 *Example: http://gitnpm.com/gcloud/json*
 
-### gitnpm.com/{pkgName}/json/{property}
-*Example: http://gitnpm.com/gcloud/json/version*
+### gitnpm.com/{pkgName}/[version]/json
+*Example: http://gitnpm.com/gcloud/json*
+*Example: http://gitnpm.com/gcloud/0.36.0/json*
+
+### gitnpm.com/{pkgName}/json/[version]/{property}
+*Example: http://gitnpm.com/gcloud/json/dependencies*
+*Example: http://gitnpm.com/gcloud/0.36.0/json/dependencies*
 
 ### gitnpm.com/{pkgName}/hits
 *Example: http://gitnpm.com/gcloud/hits*

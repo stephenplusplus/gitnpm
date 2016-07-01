@@ -76,8 +76,9 @@ var getPkgInfo = function (req, res, next) {
   })
 }
 
-express()
-  .listen(8080)
+var app = express()
+
+app
   .set('json spaces', 2)
 
   // display a form to accept a package name
@@ -108,6 +109,20 @@ express()
     res.json(pkg.latest || pkg.all)
     res.end()
   })
+  .get('/:pkgName/:version/json', validatePkgName, getPkgInfo, function (req, res) {
+    var pkg = res._pkgInfo
+    var version = req.params.version.replace(/^v/, '')
+
+    var json = pkg.all.versions[version]
+
+    if (!json) {
+      res.json(new Error('Could not load requested version'))
+    } else {
+      res.json(json)
+    }
+
+    res.end()
+  })
 
   .get('/:pkgName/json/:prop', validatePkgName, getPkgInfo, function (req, res) {
     var pkg = res._pkgInfo
@@ -117,6 +132,21 @@ express()
       res.json(new Error('Could not parse property'))
     } else {
       res.json(pkg.latest[prop])
+    }
+
+    res.end()
+  })
+  .get('/:pkgName/:version/json/:prop', validatePkgName, getPkgInfo, function (req, res) {
+    var pkg = res._pkgInfo
+    var version = req.params.version.replace(/^v/, '')
+    var prop = req.params.prop
+
+    var json = pkg.all.versions[version]
+
+    if (!json) {
+      res.json(new Error('Could not load requested version'))
+    } else {
+      res.json(json[prop])
     }
 
     res.end()
@@ -136,3 +166,5 @@ express()
       .on('prefinish', res.write.bind(res, 'done.'))
       .pipe(res)
   })
+
+app.listen(8080)
