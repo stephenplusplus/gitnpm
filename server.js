@@ -1,7 +1,7 @@
 'use strict'
 
 var express = require('express')
-var gcloud = require('gcloud')({ projectId: 'git-npm', keyFilename: './key.json' })
+var gcloud = require('google-cloud')({ projectId: 'git-npm', keyFilename: './key.json' })
 var githubUrl = require('github-url-from-git')
 var keystore = require('gcloud-kvstore')
 var packageJson = require('package-json')
