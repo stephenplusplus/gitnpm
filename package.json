@@ -8,7 +8,7 @@
   "license": "MIT",
   "dependencies": {
     "express": "^4.13.3",
-    "gcloud": "^0.21.0",
+    "google-cloud": "^0.49.0",
     "gcloud-kvstore": "^2.0.0",
     "github-url-from-git": "^1.4.0",
     "package-json": "^1.2.0",
