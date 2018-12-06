@@ -9,7 +9,7 @@ const packageJson = require('package-json')
 const through = require('through2')
 const validateNpmPackageName = require('validate-npm-package-name')
 
-const config = {projectId: 'gitnpm', keyFilename: './key.json'}
+const config = {projectId: 'git-npm', keyFilename: './key.json'}
 const datastore = new Datastore(config)
 const bigQuery = new BigQuery(config)
 
