@@ -1,23 +1,28 @@
 'use strict'
 
-var express = require('express')
-var gcloud = require('google-cloud')({ projectId: 'git-npm', keyFilename: './key.json' })
-var githubUrl = require('github-url-from-git')
-var keystore = require('gcloud-kvstore')
-var packageJson = require('package-json')
-var through = require('through2')
-var validateNpmPackageName = require('validate-npm-package-name')
+const {BigQuery} = require('@google-cloud/bigquery')
+const Datastore = require('@google-cloud/datastore')
+const {KVStore} = require('google-cloud-kvstore')
+const express = require('express')
+const githubUrl = require('github-url-from-git')
+const packageJson = require('package-json')
+const through = require('through2')
+const validateNpmPackageName = require('validate-npm-package-name')
 
-var logDataset = keystore(gcloud.datastore.dataset())
-var logTable = gcloud.bigquery().dataset('gitnpm').table('npm_packages')
+const config = {projectId: 'gitnpm', keyFilename: './key.json'}
+const datastore = new Datastore(config)
+const bigQuery = new BigQuery(config)
 
-var parseUrl = function (pkg) {
-  var repository = pkg.repository
+const logDataset = new KVStore(datastore)
+const logTable = bigQuery.dataset('gitnpm').table('npm_packages')
+
+function parseUrl(pkg) {
+  const repository = pkg.repository
 
   if (!repository) return 'https://npmjs.org/package/' + pkg.name
   if (repository.url) return githubUrl(repository.url)
 
-  var hosts = {
+  const hosts = {
     gist: {
       pattern: /gist:(\w+)/,
       getUrl: function (match) {
@@ -44,29 +49,29 @@ var parseUrl = function (pkg) {
     }
   }
 
-  for (var host in hosts) {
-    var pattern = hosts[host].pattern
-    var getUrl = hosts[host].getUrl
+  for (const host in hosts) {
+    const pattern = hosts[host].pattern
+    const getUrl = hosts[host].getUrl
 
     if (pattern.test(repository)) return getUrl(pattern.exec(repository))
   }
 }
 
-var validatePkgName = function (req, res, next) {
-  var isNameValid = validateNpmPackageName(req.params.pkgName)
+function validatePkgName(req, res, next) {
+  const isNameValid = validateNpmPackageName(req.params.pkgName)
   if (!isNameValid.validForNewPackages && !isNameValid.validForOldPackages) {
     return res.end('this looks funky. try something else')
   }
   next()
 }
 
-var getPkgInfo = function (req, res, next) {
-  var pkgName = req.params.pkgName
+function getPkgInfo(req, res, next) {
+  const pkgName = req.params.pkgName
 
   packageJson(pkgName, function (err, json) {
     if (err) return res.end(pkgName + ' isn\'t a thing... go make it?')
 
-    var latestVersion = json['dist-tags'] && json['dist-tags'].latest
+    const latestVersion = json['dist-tags'] && json['dist-tags'].latest
     res._pkgInfo = {
       all: json,
       latest: latestVersion ? json.versions[latestVersion] : {}
@@ -76,7 +81,7 @@ var getPkgInfo = function (req, res, next) {
   })
 }
 
-var app = express()
+const app = express()
 
 app
   .set('json spaces', 2)
@@ -94,9 +99,9 @@ app
 
   // redirect to a package's github
   .get('/:pkgName', validatePkgName, getPkgInfo, function (req, res) {
-    var pkgName = req.params.pkgName
-    var pkg = res._pkgInfo
-    var url = parseUrl(pkg.latest)
+    const pkgName = req.params.pkgName
+    const pkg = res._pkgInfo
+    const url = parseUrl(pkg.latest)
 
     res.redirect(url)
 
@@ -105,15 +110,15 @@ app
   })
 
   .get('/:pkgName/json', validatePkgName, getPkgInfo, function (req, res) {
-    var pkg = res._pkgInfo
+    const pkg = res._pkgInfo
     res.json(pkg.latest || pkg.all)
     res.end()
   })
   .get('/:pkgName/:version/json', validatePkgName, getPkgInfo, function (req, res) {
-    var pkg = res._pkgInfo
-    var version = req.params.version.replace(/^v/, '')
+    const pkg = res._pkgInfo
+    const version = req.params.version.replace(/^v/, '')
 
-    var json = pkg.all.versions[version]
+    const json = pkg.all.versions[version]
 
     if (!json) {
       res.json(new Error('Could not load requested version'))
@@ -125,8 +130,8 @@ app
   })
 
   .get('/:pkgName/json/:prop', validatePkgName, getPkgInfo, function (req, res) {
-    var pkg = res._pkgInfo
-    var prop = req.params.prop
+    const pkg = res._pkgInfo
+    const prop = req.params.prop
 
     if (!pkg.latest) {
       res.json(new Error('Could not parse property'))
@@ -137,11 +142,11 @@ app
     res.end()
   })
   .get('/:pkgName/:version/json/:prop', validatePkgName, getPkgInfo, function (req, res) {
-    var pkg = res._pkgInfo
-    var version = req.params.version.replace(/^v/, '')
-    var prop = req.params.prop
+    const pkg = res._pkgInfo
+    const version = req.params.version.replace(/^v/, '')
+    const prop = req.params.prop
 
-    var json = pkg.all.versions[version]
+    const json = pkg.all.versions[version]
 
     if (!json) {
       res.json(new Error('Could not load requested version'))
@@ -153,7 +158,7 @@ app
   })
 
   .get('/:pkgName/hits', validatePkgName, function (req, res) {
-    var pkgName = req.params.pkgName
+    const pkgName = req.params.pkgName
 
     res.write('<h1>redirects from gitnpm.com/' + pkgName + '</h1>')
     res.write('<em>running query...</em> ')
