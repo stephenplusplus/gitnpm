@@ -16,6 +16,7 @@
     "validate-npm-package-name": "^2.2.2"
   },
   "scripts": {
+    "deploy": "gcloud app deploy",
     "test": "standard"
   },
   "devDependencies": {
